@@ -1,0 +1,34 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+
+data = {
+    'Возраст': [25, 30, 35, 40, 45],
+    'Глюкоза': [90, 110, 130, 150, 160],
+    'Диабет': [0, 0, 1, 1, 1]
+}
+
+df = pd.DataFrame(data)
+
+X = df[['Возраст', 'Глюкоза']]
+y = df['Диабет']
+
+model = LogisticRegression()
+model.fit(X, y)
+
+age_range = np.linspace(20, 50, 100)
+glucose_range = np.linspace(80, 170, 100)
+age_grid, glucose_grid = np.meshgrid(age_range, glucose_range)
+predicted_probabilities = model.predict_proba(np.c_[age_grid.ravel(), glucose_grid.ravel()])[:, 1].reshape(age_grid.shape)
+
+fig = plt.figure(figsize=(10, 6))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(age_grid, glucose_grid, predicted_probabilities, cmap='viridis', alpha=0.8)
+
+ax.set_xlabel('Возраст')
+ax.set_ylabel('Уровень глюкозы')
+ax.set_zlabel('Вероятность диабета')
+ax.set_title('Вероятность заболевания диабетом в зависимости от возраста и уровня глюкозы')
+
+plt.show()
